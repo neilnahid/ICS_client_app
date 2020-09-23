@@ -5,23 +5,26 @@ import url from 'url';
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
 } from 'electron-devtools-installer'; //eslint-disable-line
+import { referenceWindow } from './globals';
+import { openTray } from './tray';
+import './socketIO';
 
-let mainWindow: Electron.BrowserWindow | null;
-
+let window: Electron.BrowserWindow;
 function createWindow() {
-  mainWindow = new BrowserWindow({
+  window = new BrowserWindow({
     width: 1100,
     height: 700,
     backgroundColor: '#191622',
     webPreferences: {
       nodeIntegration: true,
     },
+    kiosk: true,
   });
 
   if (process.env.NODE_ENV === 'development') {
-    mainWindow.loadURL('http://localhost:4000');
+    window.loadURL('http://localhost:4000');
   } else {
-    mainWindow.loadURL(
+    window.loadURL(
       url.format({
         pathname: path.join(__dirname, 'renderer/index.html'),
         protocol: 'file:',
@@ -29,10 +32,11 @@ function createWindow() {
       })
     );
   }
-
-  mainWindow.on('closed', () => {
-    mainWindow = null;
+  window.on('minimize', (e: Electron.Event) => {
+    e.preventDefault();
+    window.hide();
   });
+  window.setMenu(null);
 }
 
 app
@@ -44,4 +48,6 @@ app
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log('An error occurred: ', err));
     }
+    referenceWindow(window);
+    openTray();
   });
