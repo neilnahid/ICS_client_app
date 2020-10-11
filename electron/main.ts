@@ -1,4 +1,5 @@
 // eslint-disable-next-line
+import './ipcHandler';
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import url from 'url';
@@ -46,7 +47,9 @@ app
     if (process.env.NODE_ENV === 'development') {
       installExtension(REACT_DEVELOPER_TOOLS)
         .then((name) => console.log(`Added Extension:  ${name}`))
-        .catch((err) => console.log('An error occurred: ', err));
+        .catch((err) => {
+          throw err;
+        });
     }
     referenceWindow(window);
     openTray();

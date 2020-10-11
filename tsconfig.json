@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "incremental": true,
+    "noEmitOnError": true,
+    "composite": true,
+    "isolatedModules": true,
     "target": "es5",
     "module": "commonjs",
     "lib": ["dom", "es2015", "es2016", "es2017"],

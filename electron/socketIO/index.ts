@@ -4,23 +4,26 @@ import { closeTray, openTray } from '../tray';
 import getValuesWithProperty from '../utils/extractKeyVal';
 import { window } from '../globals';
 
-const socket = io(process.env.SERVER_URI ?? 'http://localhost:3000');
+const socket = io(process.env.SERVER_URI ?? 'http://localhost:3001');
 const macAddresses: string[] = getValuesWithProperty(
   networkInterfaces(),
   'mac'
 );
+function authenticate(): void {
+  if (socket.connected) socket.emit('authenticate', macAddresses);
+  else socket.connect();
+}
 socket.on('connect', () => {
-  console.log('connected');
-  socket.emit('authenticate', macAddresses);
+  authenticate();
 });
 socket.on('activate_PC', () => {
   closeTray();
   window.maximize();
-  console.log('activated PC');
 });
 
 socket.on('deactivate_PC', () => {
   openTray();
   window.minimize();
-  console.log('deactivated PC');
 });
+
+export { socket, authenticate };
